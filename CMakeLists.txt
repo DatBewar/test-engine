@@ -9,7 +9,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin/$<CONFIG>)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED)
 
-project(test_engine CXX)
+project(engine CXX)
 
 # External DIR
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui)
@@ -34,31 +34,22 @@ endif()
 
 # Test Engine
 set(ENGINE_SRC
-    main.cpp
-    raytracing/camera.h
-    raytracing/color.h
-    raytracing/hittable_list.h
-    raytracing/hittable.h
-    raytracing/material.h
-    raytracing/ray.h
-    raytracing/rtweekend.h
-    raytracing/sphere.h
-    raytracing/vec3.h
+    src/main.cpp
 )
 
 if(OpenGL_FOUND AND glfw3_FOUND)
     add_compile_definitions(_DRIVER_OGL3)
 
     list(APPEND ENGINE_SRC
-        driver_ogl3.h
-        driver_ogl3.cpp
+        src/driver/driver_ogl3.h
+        src/driver/driver_ogl3.cpp
     )
 endif()
 
 if(WIN32)
     list(APPEND ENGINE_SRC_
-        driver_dx12.h
-        driver_dx12.cpp
+        src/driver/driver_dx12.h
+        src/driver/driver_dx12.cpp
     )
     list(APPEND LIBS_DEPS_
         d3d12.lib
@@ -68,5 +59,5 @@ if(WIN32)
 endif()
 
 add_executable(${PROJECT_NAME} ${ENGINE_SRC})
-target_link_libraries(${PROJECT_NAME} PUBLIC imgui ${LIBS_DEPS})
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/raytracing)
+target_link_libraries(${PROJECT_NAME} PRIVATE imgui ${LIBS_DEPS})
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/driver)
